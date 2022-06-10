@@ -47,13 +47,19 @@ def openSwitchNet():
 
     info( "*** Creating switches\n" )
     #add switch here
+    s0 = net.addSwitch('s0')
     
     #add h0,h1,h2 here
     info( "*** Creating hosts\n" )
+    h0 = net.addHost("h0", ip="192.168.1.1/25")
+    h1 = net.addHost("h1", ip="192.168.1.2/25")
+    h2 = net.addHost("h2", ip="192.168.1.3/25")
     
     #add link h0-s0 include interface s0-eth
     info( "*** Creating links\n" )
-    
+    net.addLink(h0, s0, intfName2 = "s0-eth0", bw = 10, use_htb = True)
+    net.addLink(h1, s0, intfName2 = "s0-eth1", bw = 10, use_htb = True)
+    net.addLink(h2, s0, intfName2 = "s0-eth2", bw = 10, use_htb = True)
 
     info( "*** Starting network\n" )
     net.build()

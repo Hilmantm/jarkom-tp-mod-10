@@ -46,6 +46,10 @@ def routerNet():
     net.addHost( 'r0', ip='192.168.1.1/24' )
     
     # Add Host h0,h1,h2,h3
+    net.addHost("h0", ip="192.168.1.2/29", defaultRoute="via 192.168.1.1")
+    net.addHost("h1", ip="192.168.3.2/29", defaultRoute="via 192.168.3.1")
+    net.addHost("h2", ip="192.168.4.2/29", defaultRoute="via 192.168.4.1")
+    net.addHost("h3", ip="192.168.5.2/29", defaultRoute="via 192.168.5.1")
     
 
     # Add Link
@@ -73,13 +77,14 @@ def routerNet():
     info( '\n*** Queue Disicline :\n' )
     
     # reset queue discipline
-    net[ 'r0' ].cmdPrint( 'tc qdisc del dev r0-eth0 root' ) 
+    net[ 'r0' ].cmdPrint('tc qdisc del dev r0-eth0 root') 
 
     # add queue discipline root here
-     
+    net['r0'].cmdPrint("tc qdisc add dev r0-eth0 root handle 1:0 cbq rate 10Mbit 1000")
     
     # add queue dicipline classes here 
-    
+    net['r0'].cmdPrint("tc class add dev r0-eth0 parent 1: classid 1:1 cbq rate 10Mbit avpkt 1000 bounded")
+    net['r0'].cmdPrint("tc class add dev r0-eth0 parent 1: classid 1:2 cbq rate 10Mbit avpkt 1000 isolated")
 
     # add queue dicipline filters
     net[ 'r0' ].cmdPrint( 'tc filter add dev r0-eth0 parent 1: protocol ip u32 match ip src '+net[ 'h1' ].IP()+' flowid 1:1' ) 
